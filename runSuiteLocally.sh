@@ -26,7 +26,7 @@ if [ $? -ne 0 ]; then
 fi
 
 
-echo "Create the Google Pub Sub Topics Locally"
+echo "Create the Google Pub Sub Topics 'Locally' ( Cough )"
 gcloud beta pubsub topics create UI_REQUEST_TOPIC_LOCAL
 if [ $? -ne 0 ]; then
     echo
