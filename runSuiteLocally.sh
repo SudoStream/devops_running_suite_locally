@@ -28,7 +28,7 @@ fi
 
 
 echo "Start Mongo DB"
-nohup mongod --dbpath /data/mongodb/timetoteach &
+nohup mongod --dbpath /data/mongodb/timetoteach --sslMode requireSSL --sslPEMKeyFile /etc/ssl/mongodb.pem &
 if [ $? -ne 0 ]; then
     echo
     echo "ERROR: Attempting to create the Mongo DB failed. Please check the output above."
