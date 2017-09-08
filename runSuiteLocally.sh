@@ -6,7 +6,7 @@ ORG_DIR=`pwd`
 TEMP_DIR=`mktemp -d` && cd $TEMP_DIR
 
 echo "First start minikube..."
-minikube start
+minikube start --insecure-registry 10.0.0.0/24
 if [ $? -ne 0 ]; then
     echo
     echo "ERROR: Starting minikube had an issue."
@@ -15,6 +15,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+eval $(minikube docker-env)
 
 echo "Create the Google Pub Sub Topics 'Locally' ( Cough )"
 gcloud beta pubsub topics create UI_REQUEST_TOPIC_LOCAL
@@ -28,7 +29,7 @@ fi
 
 
 echo "Start Mongo DB"
-nohup mongod --dbpath /data/mongodb/timetoteach --sslMode requireSSL --sslPEMKeyFile /etc/ssl/mongodb.pem &
+nohup mongod --dbpath /data/mongodb/timetoteach --sslMode requireSSL --sslPEMKeyFile /etc/ssl/mongodb.pem --sslAllowInvalidCertificates  >/home/andy/projects/timeToTeach/mongod.log 2>&1  &
 if [ $? -ne 0 ]; then
     echo
     echo "ERROR: Attempting to create the Mongo DB failed. Please check the output above."
@@ -44,11 +45,21 @@ cd devops_k8s
 ./deployServiceToKubernetes.sh --service="timetoteach-ui-server" --type="local"
 if [ $? -ne 0 ]; then
     echo
-    echo "ERROR: Attempting to create the Google Pubsub topics failed."
+    echo "ERROR: Attempting to deploy timetoteach-ui-server failed."
     echo
     cleanup
     exit 1
 fi
+
+./deployJobToKubernetes.sh --service=esandospopulator --type=local
+if [ $? -ne 0 ]; then
+    echo
+    echo "ERROR: Attempting to deploy esandospopulator failed"
+    echo
+    cleanup
+    exit 1
+fi
+
 
 
 ### Cleanup
