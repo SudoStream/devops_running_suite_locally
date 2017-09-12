@@ -22,7 +22,7 @@ nohup ${HOME}/localApps/kafka/current/bin/zookeeper-server-start.sh ${HOME}/loca
 sleep 5
 
 echo "Start Kafka Server..."
-nohup ${HOME}/localApps/kafka/current/bin/kafka-server-start.sh ${HOME}/localApps/kafka/currentconfig/server.properties >/home/andy/projects/timeToTeach/kafka-server.log 2>&1  &
+nohup ${HOME}/localApps/kafka/current/bin/kafka-server-start.sh ${HOME}/localApps/kafka/current/config/server.properties >/home/andy/projects/timeToTeach/kafka-server.log 2>&1  &
 sleep 10
 
 echo "Add topics..."
