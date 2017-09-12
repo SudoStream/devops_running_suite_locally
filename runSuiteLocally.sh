@@ -53,6 +53,7 @@ if [ $? -ne 0 ]; then
     cleanup
     exit 1
 fi
+echo "timetoteach-ui-server deployed."
 
 ./deployJobToKubernetes.sh --service=esandospopulator --type=local
 if [ $? -ne 0 ]; then
@@ -62,6 +63,17 @@ if [ $? -ne 0 ]; then
     cleanup
     exit 1
 fi
+echo "esandospopulator deployed."
+
+./deployServiceToKubernetes.sh --service="es-and-os-reader" --type="local"
+if [ $? -ne 0 ]; then
+    echo
+    echo "ERROR: Attempting to deploy es-and-os-reader failed."
+    echo
+    cleanup
+    exit 1
+fi
+echo "es-and-os-reader deployed."
 
 
 
