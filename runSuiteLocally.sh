@@ -6,7 +6,7 @@ ORG_DIR=`pwd`
 TEMP_DIR=`mktemp -d` && cd $TEMP_DIR
 
 echo "First start minikube..."
-minikube start --insecure-registry 10.0.0.0/24
+minikube start --insecure-registry 10.0.0.0/24 --memory 8192
 if [ $? -ne 0 ]; then
     echo
     echo "ERROR: Starting minikube had an issue."
