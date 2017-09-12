@@ -17,16 +17,14 @@ fi
 
 eval $(minikube docker-env)
 
-echo "Create the Google Pub Sub Topics 'Locally' ( Cough )"
-gcloud beta pubsub topics create UI_REQUEST_TOPIC_LOCAL
-if [ $? -ne 0 ]; then
-    echo
-    echo "ERROR: Attempting to create the Google Pubsub topics failed."
-    echo
-    cleanup
-    exit 1
-fi
-
+echo "Start Kafka..."
+nohup ${HOME}/localApps/kafka/current/bin/zookeeper-server-start.sh config/zookeeper.properties >/home/andy/projects/timeToTeach/kafka-zookeeper.log 2>&1  &
+sleep 5
+nohup ${HOME}/localApps/kafka/current/bin/kafka-server-start.sh config/server.properties >/home/andy/projects/timeToTeach/kafka-server.log 2>&1  &
+sleep 10
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic EXPERIENCES_AND_OUTCOMES
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic UI_REQUEST
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic SYSTEM_ALL_EVENTS_LOG
 
 echo "Start Mongo DB"
 nohup mongod --dbpath /data/mongodb/timetoteach --sslMode requireSSL --sslPEMKeyFile /etc/ssl/mongodb.pem --sslAllowInvalidCertificates  >/home/andy/projects/timeToTeach/mongod.log 2>&1  &
