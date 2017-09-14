@@ -45,6 +45,17 @@ fi
 echo "Deploy locally to Kubernetes..."
 git clone git@github.com:SudoStream/devops_k8s.git
 cd devops_k8s
+
+./generalSetup.sh
+if [ $? -ne 0 ]; then
+    echo
+    echo "ERROR: Running general setup failed."
+    echo
+    cleanup
+    exit 1
+fi
+
+
 ./deployServiceToKubernetes.sh --service="timetoteach-ui-server" --type="local"
 if [ $? -ne 0 ]; then
     echo
