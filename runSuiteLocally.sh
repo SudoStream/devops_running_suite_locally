@@ -19,7 +19,9 @@ source ./functions.sh
 ORG_DIR=`pwd`
 TEMP_DIR=`mktemp -d` && cd $TEMP_DIR
 
-if [[ START_FLAVOUR == "ALL" ]]; then
+echo "Start flavour = '${START_FLAVOUR}'"
+
+if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     echo "First start minikube..."
     minikube start --insecure-registry 10.0.0.0/24 --memory 8192
     if [ $? -ne 0 ]; then
@@ -47,6 +49,8 @@ ${HOME}/localApps/kafka/current/bin/kafka-topics.sh --create --zookeeper localho
 echo " ... topics added"
 
 echo "Start Mongo DB"
+echo "the directory is " `pwd`
+echo "and the files are ... " `ls -a`
 nohup mongod --dbpath /data/mongodb/timetoteach --sslMode requireSSL --sslPEMKeyFile /etc/ssl/mongodb.pem --sslAllowInvalidCertificates  >/home/andy/projects/timeToTeach/mongod.log 2>&1  &
 if [ $? -ne 0 ]; then
     echo
@@ -56,7 +60,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-if [[ START_FLAVOUR == "ALL" ]]; then
+sleep 10
+
+if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     echo "Deploy locally to Kubernetes..."
     git clone git@github.com:SudoStream/devops_k8s.git
     cd devops_k8s
