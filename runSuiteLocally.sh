@@ -1,21 +1,36 @@
 #!/bin/bash
 
+startFlavourCommand=$1
+if [[ ${startFlavourCommand} == "all" ]]; then
+    START_FLAVOUR="ALL"
+elif [[ ${startFlavourCommand} == "kafka-mongo" ]]; then
+    START_FLAVOUR="KAFMON"
+else
+    echo
+    echo "ERROR: Invalid start flavour. Should be... "
+    echo
+    echo "  $0 [all|kafka-mongo]"
+    echo
+    exit 1
+fi
+
 source ./functions.sh
 
 ORG_DIR=`pwd`
 TEMP_DIR=`mktemp -d` && cd $TEMP_DIR
 
-echo "First start minikube..."
-minikube start --insecure-registry 10.0.0.0/24 --memory 8192
-if [ $? -ne 0 ]; then
-    echo
-    echo "ERROR: Starting minikube had an issue."
-    echo
-    cleanup
-    exit 1
+if [[ START_FLAVOUR == "ALL" ]]; then
+    echo "First start minikube..."
+    minikube start --insecure-registry 10.0.0.0/24 --memory 8192
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Starting minikube had an issue."
+        echo
+        cleanup
+        exit 1
+    fi
+    eval $(minikube docker-env)
 fi
-
-eval $(minikube docker-env)
 
 echo "Start Kafka's Zookeeper..."
 nohup ${HOME}/localApps/kafka/current/bin/zookeeper-server-start.sh ${HOME}/localApps/kafka/current/config/zookeeper.properties >/home/andy/projects/timeToTeach/kafka-zookeeper.log 2>&1  &
@@ -41,51 +56,52 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+if [[ START_FLAVOUR == "ALL" ]]; then
+    echo "Deploy locally to Kubernetes..."
+    git clone git@github.com:SudoStream/devops_k8s.git
+    cd devops_k8s
 
-echo "Deploy locally to Kubernetes..."
-git clone git@github.com:SudoStream/devops_k8s.git
-cd devops_k8s
+    ./setupKubernetesSecrets.sh
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Running general setup failed."
+        echo
+        cleanup
+        exit 1
+    fi
 
-./setupKubernetesSecrets.sh
-if [ $? -ne 0 ]; then
-    echo
-    echo "ERROR: Running general setup failed."
-    echo
-    cleanup
-    exit 1
+
+    ./deployServiceToKubernetes.sh --service="timetoteach-ui-server" --type="local"
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to deploy timetoteach-ui-server failed."
+        echo
+        cleanup
+        exit 1
+    fi
+    echo "timetoteach-ui-server deployed."
+
+    ./deployJobToKubernetes.sh --service=esandospopulator --type=local
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to deploy esandospopulator failed"
+        echo
+        cleanup
+        exit 1
+    fi
+    echo "esandospopulator deployed."
+
+    ./deployServiceToKubernetes.sh --service="es-and-os-reader" --type="local"
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to deploy es-and-os-reader failed."
+        echo
+        cleanup
+        exit 1
+    fi
+    echo "es-and-os-reader deployed."
+
 fi
-
-
-./deployServiceToKubernetes.sh --service="timetoteach-ui-server" --type="local"
-if [ $? -ne 0 ]; then
-    echo
-    echo "ERROR: Attempting to deploy timetoteach-ui-server failed."
-    echo
-    cleanup
-    exit 1
-fi
-echo "timetoteach-ui-server deployed."
-
-./deployJobToKubernetes.sh --service=esandospopulator --type=local
-if [ $? -ne 0 ]; then
-    echo
-    echo "ERROR: Attempting to deploy esandospopulator failed"
-    echo
-    cleanup
-    exit 1
-fi
-echo "esandospopulator deployed."
-
-./deployServiceToKubernetes.sh --service="es-and-os-reader" --type="local"
-if [ $? -ne 0 ]; then
-    echo
-    echo "ERROR: Attempting to deploy es-and-os-reader failed."
-    echo
-    cleanup
-    exit 1
-fi
-echo "es-and-os-reader deployed."
-
 
 
 ### Cleanup
