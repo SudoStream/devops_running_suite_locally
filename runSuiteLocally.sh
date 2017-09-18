@@ -49,8 +49,6 @@ ${HOME}/localApps/kafka/current/bin/kafka-topics.sh --create --zookeeper localho
 echo " ... topics added"
 
 echo "Start Mongo DB"
-echo "the directory is " `pwd`
-echo "and the files are ... " `ls -a`
 nohup mongod --dbpath /data/mongodb/timetoteach --sslMode requireSSL --sslPEMKeyFile /etc/ssl/mongodb.pem --sslAllowInvalidCertificates  >/home/andy/projects/timeToTeach/mongod.log 2>&1  &
 if [ $? -ne 0 ]; then
     echo
@@ -67,7 +65,7 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     git clone git@github.com:SudoStream/devops_k8s.git
     cd devops_k8s
 
-    ./setupKubernetesSecrets.sh
+    ./setupKubernetesSecrets.sh --type="local"
     if [ $? -ne 0 ]; then
         echo
         echo "ERROR: Running general setup failed."
