@@ -23,7 +23,7 @@ echo "Start flavour = '${START_FLAVOUR}'"
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     echo "First start minikube..."
-    minikube start --insecure-registry 10.0.0.0/24 --memory 8192
+    minikube start --insecure-registry 10.0.0.0/24 --memory 24576 --cpus 4
     if [ $? -ne 0 ]; then
         echo
         echo "ERROR: Starting minikube had an issue."
@@ -75,15 +75,6 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     fi
 
 
-    ./deployServiceToKubernetes.sh --service="timetoteach-ui-server" --type="local"
-    if [ $? -ne 0 ]; then
-        echo
-        echo "ERROR: Attempting to deploy timetoteach-ui-server failed."
-        echo
-        cleanup
-        exit 1
-    fi
-    echo "timetoteach-ui-server deployed."
 
     ./deployJobToKubernetes.sh --service=esandospopulator --type=local
     if [ $? -ne 0 ]; then
@@ -104,6 +95,56 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
         exit 1
     fi
     echo "es-and-os-reader deployed."
+
+    ./deployServiceToKubernetes.sh --service="classtimetable-writer" --type="local"
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to deploy classtimetable-writer failed."
+        echo
+        cleanup
+        exit 1
+    fi
+    echo "classtimetable-writer deployed."
+
+    ./deployServiceToKubernetes.sh --service="school-reader" --type="local"
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to deploy school-reader failed."
+        echo
+        cleanup
+        exit 1
+    fi
+    echo "school-reader deployed."
+
+    ./deployServiceToKubernetes.sh --service="user-reader" --type="local"
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to deploy user-reader failed."
+        echo
+        cleanup
+        exit 1
+    fi
+    echo "user-reader deployed."
+
+    ./deployServiceToKubernetes.sh --service="user-writer" --type="local"
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to deploy user-writer failed."
+        echo
+        cleanup
+        exit 1
+    fi
+    echo "user-writer deployed."
+
+    ./deployServiceToKubernetes.sh --service="timetoteach-ui-server" --type="local"
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to deploy timetoteach-ui-server failed."
+        echo
+        cleanup
+        exit 1
+    fi
+    echo "timetoteach-ui-server deployed."
 
 fi
 
