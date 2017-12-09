@@ -23,7 +23,8 @@ echo "Start flavour = '${START_FLAVOUR}'"
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     echo "First start minikube..."
-    minikube start --insecure-registry 10.0.0.0/24 --memory 24576 --cpus 4
+    minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
+#    minikube start --memory 5000 --cpus 3
     if [ $? -ne 0 ]; then
         echo
         echo "ERROR: Starting minikube had an issue."
@@ -31,6 +32,7 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
         cleanup
         exit 1
     fi
+    minikube addons enable registry-creds
     eval $(minikube docker-env)
 fi
 
