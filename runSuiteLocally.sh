@@ -23,8 +23,8 @@ echo "Start flavour = '${START_FLAVOUR}'"
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     echo "First start minikube..."
-    minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
-#    minikube start --memory 5000 --cpus 3
+   # minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
+    minikube start --memory 5000 --cpus 3
     if [ $? -ne 0 ]; then
         echo
         echo "ERROR: Starting minikube had an issue."
@@ -32,8 +32,10 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
         cleanup
         exit 1
     fi
-    minikube addons enable registry-creds
-    eval $(minikube docker-env)
+   minikube addons enable registry-creds
+#    docker login -u oauth2accesstoken -p "$(gcloud auth print-access-token)" https://eu.gcr.io
+   # eval $(minikube docker-env)
+
 fi
 
 echo "Start Kafka's Zookeeper..."
@@ -78,7 +80,7 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
 
 
 
-    ./deployJobToKubernetes.sh --service=esandospopulator --type=local
+    ./deployJobToKubernetes.sh --service="esandospopulator" --type="local"
     if [ $? -ne 0 ]; then
         echo
         echo "ERROR: Attempting to deploy esandospopulator failed"
