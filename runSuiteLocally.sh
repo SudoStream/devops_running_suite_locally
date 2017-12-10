@@ -32,9 +32,9 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
         cleanup
         exit 1
     fi
-   minikube addons enable registry-creds
+  # minikube addons enable registry-creds
 #    docker login -u oauth2accesstoken -p "$(gcloud auth print-access-token)" https://eu.gcr.io
-   # eval $(minikube docker-env)
+   eval $(minikube docker-env)
 
 fi
 
@@ -77,8 +77,6 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
         cleanup
         exit 1
     fi
-
-
 
     ./deployJobToKubernetes.sh --service="esandospopulator" --type="local"
     if [ $? -ne 0 ]; then
