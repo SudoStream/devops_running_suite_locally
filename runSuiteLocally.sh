@@ -23,8 +23,7 @@ echo "Start flavour = '${START_FLAVOUR}'"
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     echo "First start minikube..."
-   # minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
-    minikube start --memory 5000 --cpus 3
+    minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
     if [ $? -ne 0 ]; then
         echo
         echo "ERROR: Starting minikube had an issue."
@@ -37,6 +36,8 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
    eval $(minikube docker-env)
 
 fi
+
+buildAllModules
 
 echo "Start Kafka's Zookeeper..."
 nohup ${HOME}/localApps/kafka/current/bin/zookeeper-server-start.sh ${HOME}/localApps/kafka/current/config/zookeeper.properties >/home/andy/projects/timeToTeach/kafka-zookeeper.log 2>&1  &
