@@ -23,7 +23,8 @@ echo "Start flavour = '${START_FLAVOUR}'"
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     echo "First start minikube..."
-    minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
+    #minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
+    minikube start --memory 10000 --cpus 3
     if [ $? -ne 0 ]; then
         echo
         echo "ERROR: Starting minikube had an issue."
@@ -33,7 +34,8 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     fi
   # minikube addons enable registry-creds
 #    docker login -u oauth2accesstoken -p "$(gcloud auth print-access-token)" https://eu.gcr.io
-   eval $(minikube docker-env)
+    gcloud docker --authorize-only
+#   eval $(minikube docker-env)
 
 fi
 
@@ -63,7 +65,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-sleep 10
+sleep 5
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     echo "Deploy locally to Kubernetes..."

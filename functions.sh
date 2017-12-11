@@ -31,33 +31,43 @@ function buildAllModules {
     eval $(minikube docker-env)
 
     cd /home/andy/projects/timeToTeach/lib_messages
+    gcloud docker --authorize-only
     sbt publishLocal
 
     cd /home/andy/projects/timeToTeach/job_esandospopulator
+    gcloud docker --authorize-only
     sbt docker:publishLocal
 
     cd /home/andy/projects/timeToTeach/job_test_populator
+    gcloud docker --authorize-only
     sbt docker:publishLocal
 
     cd /home/andy/projects/timeToTeach/svc_classtimetable-reader
+    gcloud docker --authorize-only
     sbt docker:publishLocal
 
     cd /home/andy/projects/timeToTeach/svc_classtimetable-writer
+    gcloud docker --authorize-only
     sbt docker:publishLocal
 
     cd /home/andy/projects/timeToTeach/svc_es-and-os-reader
+    gcloud docker --authorize-only
     sbt docker:publishLocal
 
     cd /home/andy/projects/timeToTeach/svc_school-reader
+    gcloud docker --authorize-only
     sbt docker:publishLocal
 
     cd /home/andy/projects/timeToTeach/svc_timetoteach-ui-server
+    gcloud docker --authorize-only
     sbt docker:publishLocal
 
     cd /home/andy/projects/timeToTeach/svc_user-reader
+    gcloud docker --authorize-only
     sbt docker:publishLocal
 
     cd /home/andy/projects/timeToTeach/svc_user-writer
+    gcloud docker --authorize-only
     sbt docker:publishLocal
 
     cd $curr_dir
