@@ -91,6 +91,16 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     fi
     echo "esandospopulator deployed."
 
+    ./deployJobToKubernetes.sh --service="test-populator" --type="local"
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to deploy test-populator failed"
+        echo
+        cleanup
+        exit 1
+    fi
+    echo "test-populator deployed."
+
     ./deployServiceToKubernetes.sh --service="es-and-os-reader" --type="local"
     if [ $? -ne 0 ]; then
         echo
