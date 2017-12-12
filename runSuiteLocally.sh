@@ -63,7 +63,6 @@ if [ $? -ne 0 ]; then
     cleanup
     exit 1
 fi
-
 sleep 5
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
