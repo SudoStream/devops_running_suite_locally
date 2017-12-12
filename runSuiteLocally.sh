@@ -1,4 +1,5 @@
 #!/bin/bash
+source ./functions.sh
 
 startFlavourCommand=$1
 if [[ ${startFlavourCommand} == "all" ]]; then
@@ -13,8 +14,6 @@ else
     echo
     exit 1
 fi
-
-source ./functions.sh
 
 ORG_DIR=`pwd`
 TEMP_DIR=`mktemp -d` && cd $TEMP_DIR
@@ -81,86 +80,14 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
         exit 1
     fi
 
-    ./deployJobToKubernetes.sh --service="esandospopulator" --type="local"
-    if [ $? -ne 0 ]; then
-        echo
-        echo "ERROR: Attempting to deploy esandospopulator failed"
-        echo
-        cleanup
-        exit 1
-    fi
-    echo "esandospopulator deployed."
-
-    ./deployJobToKubernetes.sh --service="test-populator" --type="local"
-    if [ $? -ne 0 ]; then
-        echo
-        echo "ERROR: Attempting to deploy test-populator failed"
-        echo
-        cleanup
-        exit 1
-    fi
-    echo "test-populator deployed."
-
-    ./deployServiceToKubernetes.sh --service="es-and-os-reader" --type="local"
-    if [ $? -ne 0 ]; then
-        echo
-        echo "ERROR: Attempting to deploy es-and-os-reader failed."
-        echo
-        cleanup
-        exit 1
-    fi
-    echo "es-and-os-reader deployed."
-
-    ./deployServiceToKubernetes.sh --service="classtimetable-writer" --type="local"
-    if [ $? -ne 0 ]; then
-        echo
-        echo "ERROR: Attempting to deploy classtimetable-writer failed."
-        echo
-        cleanup
-        exit 1
-    fi
-    echo "classtimetable-writer deployed."
-
-    ./deployServiceToKubernetes.sh --service="school-reader" --type="local"
-    if [ $? -ne 0 ]; then
-        echo
-        echo "ERROR: Attempting to deploy school-reader failed."
-        echo
-        cleanup
-        exit 1
-    fi
-    echo "school-reader deployed."
-
-    ./deployServiceToKubernetes.sh --service="user-reader" --type="local"
-    if [ $? -ne 0 ]; then
-        echo
-        echo "ERROR: Attempting to deploy user-reader failed."
-        echo
-        cleanup
-        exit 1
-    fi
-    echo "user-reader deployed."
-
-    ./deployServiceToKubernetes.sh --service="user-writer" --type="local"
-    if [ $? -ne 0 ]; then
-        echo
-        echo "ERROR: Attempting to deploy user-writer failed."
-        echo
-        cleanup
-        exit 1
-    fi
-    echo "user-writer deployed."
-
-    ./deployServiceToKubernetes.sh --service="timetoteach-ui-server" --type="local"
-    if [ $? -ne 0 ]; then
-        echo
-        echo "ERROR: Attempting to deploy timetoteach-ui-server failed."
-        echo
-        cleanup
-        exit 1
-    fi
-    echo "timetoteach-ui-server deployed."
-
+    deployJob "esandospopulator"
+    deployJob "test-populator"
+    deployService "es-and-os-reader"
+    deployService "classtimetable-writer"
+    deployService "school-reader"
+    deployService "user-reader"
+    deployService "user-writer"
+    deployService "timetoteach-ui-server"
 fi
 
 

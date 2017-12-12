@@ -1,5 +1,32 @@
 #!/usr/bin/env bash
 
+function deployJob() {
+   echo
+   ./deployJobToKubernetes.sh --service="$1" --type="local"
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to deploy $1 failed"
+        echo
+        cleanup
+        exit 1
+    fi
+    echo "$1 deployed."
+}
+
+function deployService() {
+   echo
+   ./deployServiceToKubernetes.sh --service="$1" --type="local"
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to deploy $1 failed"
+        echo
+        cleanup
+        exit 1
+    fi
+    echo "$1 deployed."
+}
+
+
 function cleanup {
     echo "Cleanup ..."
 
