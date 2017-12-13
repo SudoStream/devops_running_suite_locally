@@ -83,6 +83,7 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     deployJob "test-populator"
     deployService "es-and-os-reader"
     deployService "classtimetable-writer"
+    deployService "classtimetable-reader"
     deployService "school-reader"
     deployService "user-reader"
     deployService "user-writer"
