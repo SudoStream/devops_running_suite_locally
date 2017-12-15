@@ -63,7 +63,7 @@ if [ $? -ne 0 ]; then
     cleanup
     exit 1
 fi
-sleep 5
+sleep 15
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     echo "Deploy locally to Kubernetes..."
