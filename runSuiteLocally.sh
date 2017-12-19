@@ -1,5 +1,4 @@
 #!/bin/bash
-source ./functions.sh
 
 startFlavourCommand=$1
 if [[ ${startFlavourCommand} == "all" ]]; then
@@ -21,6 +20,7 @@ TEMP_DIR=`mktemp -d` && cd $TEMP_DIR
 echo "Start flavour = '${START_FLAVOUR}'"
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
+    source ${ORG_DIR}/functions.sh
     echo "First start minikube..."
     #minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
     minikube start --memory 10000 --cpus 3
@@ -35,10 +35,9 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
 #    docker login -u oauth2accesstoken -p "$(gcloud auth print-access-token)" https://eu.gcr.io
     gcloud docker --authorize-only
 #   eval $(minikube docker-env)
-
+    buildAllModules
 fi
 
-buildAllModules
 
 echo "Start Kafka's Zookeeper..."
 nohup ${HOME}/localApps/kafka/current/bin/zookeeper-server-start.sh ${HOME}/localApps/kafka/current/config/zookeeper.properties >/home/andy/projects/timeToTeach/kafka-zookeeper.log 2>&1  &
