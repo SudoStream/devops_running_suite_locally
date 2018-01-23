@@ -20,6 +20,16 @@ TEMP_DIR=`mktemp -d` && cd $TEMP_DIR
 echo "Start flavour = '${START_FLAVOUR}'"
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
+    echo "Start Mongo DB"
+    nohup mongod --dbpath /data/mongodb/timetoteach --sslMode requireSSL --sslPEMKeyFile /etc/ssl/mongodb.pem --sslAllowInvalidCertificates  >/home/andy/projects/timeToTeach/mongod.log 2>&1  &
+    if [ $? -ne 0 ]; then
+        echo
+        echo "ERROR: Attempting to create the Mongo DB failed. Please check the output above."
+        echo
+        cleanup
+        exit 1
+    fi
+
     source ${ORG_DIR}/functions.sh
     echo "First start minikube..."
     #minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
@@ -53,15 +63,6 @@ fi
 #${HOME}/localApps/kafka/current/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic SYSTEM_ALL_EVENTS_LOG
 #echo " ... topics added"
 
-echo "Start Mongo DB"
-nohup mongod --dbpath /data/mongodb/timetoteach --sslMode requireSSL --sslPEMKeyFile /etc/ssl/mongodb.pem --sslAllowInvalidCertificates  >/home/andy/projects/timeToTeach/mongod.log 2>&1  &
-if [ $? -ne 0 ]; then
-    echo
-    echo "ERROR: Attempting to create the Mongo DB failed. Please check the output above."
-    echo
-    cleanup
-    exit 1
-fi
 sleep 15
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
@@ -78,8 +79,8 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
         exit 1
     fi
 
-    deployJob "esandospopulator"
-    deployJob "test-populator"
+#    deployJob "esandospopulator"
+#    deployJob "test-populator"
     deployService "es-and-os-reader"
     deployService "classtimetable-writer"
     deployService "classtimetable-reader"
