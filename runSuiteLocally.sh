@@ -19,17 +19,18 @@ TEMP_DIR=`mktemp -d` && cd $TEMP_DIR
 
 echo "Start flavour = '${START_FLAVOUR}'"
 
-if [[ "${START_FLAVOUR}" == "ALL" ]]; then
-    echo "Start Mongo DB"
-    nohup mongod --dbpath /data/mongodb/timetoteach --sslMode requireSSL --sslPEMKeyFile /etc/ssl/mongodb.pem --sslAllowInvalidCertificates  >/home/andy/projects/timeToTeach/mongod.log 2>&1  &
-    if [ $? -ne 0 ]; then
-        echo
-        echo "ERROR: Attempting to create the Mongo DB failed. Please check the output above."
-        echo
-        cleanup
-        exit 1
-    fi
+echo "Start Mongo DB"
+nohup mongod --dbpath /data/mongodb/timetoteach --sslMode requireSSL --sslPEMKeyFile /etc/ssl/mongodb.pem --sslAllowInvalidCertificates  >/home/andy/projects/timeToTeach/mongod.log 2>&1  &
+if [ $? -ne 0 ]; then
+    echo
+    echo "ERROR: Attempting to create the Mongo DB failed. Please check the output above."
+    echo
+    cleanup
+    exit 1
+fi
 
+
+if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     source ${ORG_DIR}/functions.sh
     echo "First start minikube..."
     #minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
@@ -88,6 +89,8 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
     deployService "user-reader"
     deployService "user-writer"
     deployService "timetoteach-ui-server"
+
+    deleteAllPodsToForceRedeploy
 fi
 
 

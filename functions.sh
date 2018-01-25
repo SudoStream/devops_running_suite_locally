@@ -13,6 +13,11 @@ function deployJob() {
     echo "$1 deployed."
 }
 
+function deleteAllPodsToForceRedeploy() {
+    echo "Deleting all pods to force redeploy"
+    kubectl delete pod `kubectl  get pods | awk '{ print $1 }' | grep -v NAME`
+}
+
 function deployService() {
    echo
    ./deployServiceToKubernetes.sh --service="$1" --type="local"
