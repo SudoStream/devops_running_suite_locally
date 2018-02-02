@@ -5,11 +5,13 @@ if [[ ${startFlavourCommand} == "all" ]]; then
     START_FLAVOUR="ALL"
 elif [[ ${startFlavourCommand} == "kafka-mongo" ]]; then
     START_FLAVOUR="KAFMON"
+elif [[ ${startFlavourCommand} == "allnb" ]]; then
+    START_FLAVOUR="ALL_NO_BUILD"
 else
     echo
     echo "ERROR: Invalid start flavour. Should be... "
     echo
-    echo "  $0 [all|kafka-mongo]"
+    echo "  $0 [all|kafka-mongo|allnb]"
     echo
     exit 1
 fi
@@ -29,26 +31,33 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+source ${ORG_DIR}/functions.sh
+
+function startMinikubeIfRequired() {
+    kubectl get pods
+    if [[ "$?" == "1" ]]; then
+        echo "First start minikube..."
+        #minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
+        minikube start --memory 16000 --cpus 3
+        if [ $? -ne 0 ]; then
+            echo
+            echo "ERROR: Starting minikube had an issue."
+            echo
+            cleanup
+            exit 1
+        fi
+    else
+        echo "No need start minikube as already up"
+    fi
+    gcloud docker --authorize-only
+}
 
 if [[ "${START_FLAVOUR}" == "ALL" ]]; then
-    source ${ORG_DIR}/functions.sh
-    echo "First start minikube..."
-    #minikube start --insecure-registry 10.0.0.0/24 --memory 5000 --cpus 3
-    minikube start --memory 10000 --cpus 3
-    if [ $? -ne 0 ]; then
-        echo
-        echo "ERROR: Starting minikube had an issue."
-        echo
-        cleanup
-        exit 1
-    fi
-  # minikube addons enable registry-creds
-#    docker login -u oauth2accesstoken -p "$(gcloud auth print-access-token)" https://eu.gcr.io
-    gcloud docker --authorize-only
-#   eval $(minikube docker-env)
+    startMinikubeIfRequired
     buildAllModules
+elif [[ "${START_FLAVOUR}" == "ALL_NO_BUILD" ]]; then
+    startMinikubeIfRequired
 fi
-
 
 #echo "Start Kafka's Zookeeper..."
 #nohup ${HOME}/localApps/kafka/current/bin/zookeeper-server-start.sh ${HOME}/localApps/kafka/current/config/zookeeper.properties >/home/andy/projects/timeToTeach/kafka-zookeeper.log 2>&1  &
@@ -66,7 +75,7 @@ fi
 
 sleep 15
 
-if [[ "${START_FLAVOUR}" == "ALL" ]]; then
+if [ "${START_FLAVOUR}" == "ALL" ] || [ "${START_FLAVOUR}" == "ALL_NO_BUILD" ]; then
     echo "Deploy locally to Kubernetes..."
     git clone git@github.com:SudoStream/devops_k8s.git
     cd devops_k8s
@@ -80,7 +89,7 @@ if [[ "${START_FLAVOUR}" == "ALL" ]]; then
         exit 1
     fi
 
-#    deployJob "esandospopulator"
+    deployJob "esandospopulator"
 #    deployJob "test-populator"
     deployService "es-and-os-reader"
     deployService "classtimetable-writer"
