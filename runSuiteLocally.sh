@@ -74,6 +74,7 @@ fi
 #echo " ... topics added"
 
 sleep 15
+kubectl config use-context minikube
 
 if [ "${START_FLAVOUR}" == "ALL" ] || [ "${START_FLAVOUR}" == "ALL_NO_BUILD" ]; then
     echo "Deploy locally to Kubernetes..."
