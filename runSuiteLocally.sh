@@ -30,9 +30,9 @@ if [ $? -ne 0 ]; then
     cleanup
     exit 1
 fi
-
+echo "Started Mongo DB"
 source ${ORG_DIR}/functions.sh
-
+echo "Sourced functions"
 function startMinikubeIfRequired() {
     kubectl get pods
     if [[ "$?" == "1" ]]; then
