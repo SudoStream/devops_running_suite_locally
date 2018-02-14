@@ -34,6 +34,7 @@ echo "Started Mongo DB"
 source ${ORG_DIR}/functions.sh
 echo "Sourced functions"
 function startMinikubeIfRequired() {
+    kubectl config use-context minikube
     kubectl get pods
     if [[ "$?" == "1" ]]; then
         echo "First start minikube..."
